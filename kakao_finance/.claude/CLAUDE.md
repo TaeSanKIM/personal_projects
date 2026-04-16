@@ -32,3 +32,8 @@
 환경 변수 설정, 카카오 OAuth 인증 흐름, 토큰 관리, 외부 API 호출 규칙, .env 파일 보호.
 
 @rules/security.md
+
+### AI 분석 (`rules/analyzer.md`)
+급등 종목 분석 동작 방식, 프롬프트 파일 관리, 수정 시 체크리스트, 급등 기준 상수.
+
+@rules/analyzer.md

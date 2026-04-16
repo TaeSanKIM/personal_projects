@@ -7,7 +7,8 @@
 ```
 KAKAO_REST_API_KEY=...       # Kakao Developers 앱의 REST API 키
 KAKAO_REFRESH_TOKEN=...      # 최초 인증 후 발급되는 리프레시 토큰
-SEND_TIME=09:00              # 매일 메시지를 보낼 시각 (HH:MM)
+SEND_TIME=16:00              # 매일 메시지를 보낼 시각 (HH:MM)
+ANTHROPIC_API_KEY=...        # analyzer/ 전용. Anthropic API 키
 ```
 
 ## 카카오 API 인증 흐름

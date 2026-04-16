@@ -25,24 +25,20 @@ def run() -> None:
         else:
             print(f"  [{s['name']}] 현재 {s['current_price']:.2f} / 기준 {s['base_price']:.2f} / 등락 {s['change_pct']:+.2f}%")
 
-    filtered = [
+    surge_stocks = [
         s for s in stocks
         if "error" not in s and abs(s.get("daily_change_pct") or 0) >= ALERT_THRESHOLD
     ]
 
-    if not filtered:
-        print(f"  전일대비 ±{ALERT_THRESHOLD}% 이상 종목 없음 — 전송 건너뜀")
-        return
-
     print("\n급등 종목 AI 분석 중...")
-    analyses = analyze_surges(filtered)
+    analyses = analyze_surges(surge_stocks) if surge_stocks else {}
     if analyses:
         for ticker, text in analyses.items():
             print(f"  [{ticker}] {text[:80]}...")
     else:
-        print("  AI 분석 결과 없음")
+        print(f"  전일대비 ±{ALERT_THRESHOLD}% 이상 종목 없음")
 
-    message = format_message(filtered, BASE_DATE, analyses)
+    message = format_message(stocks, BASE_DATE, analyses)
     print("\n--- 전송 메시지 ---")
     print(message)
     print("-------------------\n")

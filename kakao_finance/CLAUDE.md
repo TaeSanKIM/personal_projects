@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Rules
+
+@.claude/CLAUDE.md
+
 ## 파일 구조 및 로드 경로
 
 ```

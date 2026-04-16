@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Rules
 
+도메인별 작업 규칙을 정의한다. 종목 관리, 스케줄러 운영, 보안 정책에 대한 세부 지침을 포함한다.
+
 @.claude/CLAUDE.md
 
 ## 파일 구조 및 로드 경로

@@ -26,16 +26,6 @@ python scheduler.py
 python kakao_auth.py
 ```
 
-## 환경 변수 설정
-
-`.env` 파일을 루트에 생성해야 한다 (`.env.example` 참고):
-
-```
-KAKAO_REST_API_KEY=...       # Kakao Developers 앱의 REST API 키
-KAKAO_REFRESH_TOKEN=...      # 최초 인증 후 발급되는 리프레시 토큰
-SEND_TIME=09:00              # 매일 메시지를 보낼 시각 (HH:MM)
-```
-
 ## 아키텍처
 
 ```
@@ -47,26 +37,3 @@ kakao_sender.py   Kakao REST API를 호출해 나에게 메시지 전송
 config.py         .env 로드 및 추적할 주식 목록(종목 코드/티커) 관리
 ```
 
-## 카카오 API 인증 흐름
-
-Kakao "나에게 보내기"는 사용자 토큰(access token)이 필요하다.
-
-1. `kakao_auth.py`를 실행해 브라우저 인증 → 최초 `access_token` + `refresh_token` 발급
-2. `refresh_token`을 `.env`에 저장
-3. 이후 매 실행 시 `refresh_token`으로 `access_token`을 자동 갱신
-
-토큰 유효기간: `access_token` 6시간 / `refresh_token` 60일 (갱신 시 재발급)
-
-## 주식 종목 설정
-
-`config.py`의 `STOCKS` 리스트에서 관리:
-
-```python
-STOCKS = [
-    {"name": "동양생명",      "ticker": "082640", "market": "KRX"},
-    {"name": "코노코필립스",  "ticker": "COP",    "market": "US"},
-]
-```
-
-- 한국 주식: `market="KRX"` → `pykrx` 사용
-- 해외 주식: `market="US"` → `yfinance` 사용

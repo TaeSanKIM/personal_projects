@@ -13,4 +13,5 @@ BASE_DATE = "20260301"
 STOCKS = [
     {"name": "동양생명",     "ticker": "082640", "market": "KRX"},
     {"name": "코노코필립스", "ticker": "COP",    "market": "US"},
+    {"name": "퀀텀컴퓨팅",  "ticker": "QUBT",   "market": "US"},
 ]

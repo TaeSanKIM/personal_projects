@@ -2,7 +2,7 @@ name: kakao_finance daily alert
 
 on:
   schedule:
-    - cron: '0 7 * * *'  # 매일 16:00 KST (07:00 UTC)
+    - cron: '0 23 * * *'  # 매일 08:00 KST (23:00 UTC)
   workflow_dispatch:      # 수동 실행 버튼
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/.env
           echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/.env
-          echo "SEND_TIME=16:00" >> kakao_finance/.env
+          echo "SEND_TIME=08:00" >> kakao_finance/.env
 
       - name: Run stock alert
         run: python kakao_finance/alert/main.py
@@ -55,7 +55,7 @@ jobs:
           echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/.env
           echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/.env
           echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> kakao_finance/.env
-          echo "SEND_TIME=16:00" >> kakao_finance/.env
+          echo "SEND_TIME=08:00" >> kakao_finance/.env
 
       - name: Run stock analyzer
         run: python kakao_finance/analyzer/main.py

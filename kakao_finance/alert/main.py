@@ -9,6 +9,9 @@ from common.kakao_sender import send_message
 from common.config import BASE_DATE
 from common.formatter import format_message
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "analyzer"))
+from stock_analyzer import analyze_surges
+
 ALERT_THRESHOLD = 5.0  # 전일대비 등락률 기준 (%)
 
 
@@ -31,7 +34,15 @@ def run() -> None:
         print(f"  전일대비 ±{ALERT_THRESHOLD}% 이상 종목 없음 — 전송 건너뜀")
         return
 
-    message = format_message(filtered, BASE_DATE)
+    print("\n급등 종목 AI 분석 중...")
+    analyses = analyze_surges(filtered)
+    if analyses:
+        for ticker, text in analyses.items():
+            print(f"  [{ticker}] {text[:80]}...")
+    else:
+        print("  AI 분석 결과 없음")
+
+    message = format_message(filtered, BASE_DATE, analyses)
     print("\n--- 전송 메시지 ---")
     print(message)
     print("-------------------\n")

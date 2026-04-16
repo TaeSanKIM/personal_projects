@@ -56,7 +56,7 @@ def fetch_all() -> list[dict]:
     results = []
 
     for s in STOCKS:
-        name, ticker, market = s["name"], s["ticker"], s["market"]
+        name, ticker, market, sector = s["name"], s["ticker"], s["market"], s.get("sector", "기타")
         try:
             if market == "KRX":
                 base_price = _krx_price(ticker, BASE_DATE)
@@ -82,6 +82,7 @@ def fetch_all() -> list[dict]:
             results.append({
                 "name": name,
                 "ticker": ticker,
+                "sector": sector,
                 "currency": currency,
                 "base_price": base_price,
                 "current_price": current_price,

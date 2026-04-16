@@ -12,12 +12,12 @@ SEND_TIME = os.getenv("SEND_TIME", "09:00")
 BASE_DATE = "20260301"
 
 STOCKS = [
-    {"name": "동양생명",     "ticker": "082640", "market": "KRX"},
-    {"name": "삼성전자",     "ticker": "005930", "market": "KRX"},
-    {"name": "SK하이닉스",   "ticker": "000660", "market": "KRX"},
-    {"name": "SK텔레콤",     "ticker": "017670", "market": "KRX"},
-    {"name": "코노코필립스", "ticker": "COP",    "market": "US"},
-    {"name": "퀀텀컴퓨팅",  "ticker": "QUBT",   "market": "US"},
-    {"name": "디웨이브퀀텀", "ticker": "QBTS",   "market": "US"},
-    {"name": "블룸에너지",   "ticker": "BE",     "market": "US"},
+    {"name": "동양생명",     "ticker": "082640", "market": "KRX", "sector": "보험"},
+    {"name": "삼성전자",     "ticker": "005930", "market": "KRX", "sector": "반도체"},
+    {"name": "SK하이닉스",   "ticker": "000660", "market": "KRX", "sector": "반도체"},
+    {"name": "SK텔레콤",     "ticker": "017670", "market": "KRX", "sector": "통신"},
+    {"name": "코노코필립스", "ticker": "COP",    "market": "US",  "sector": "에너지"},
+    {"name": "퀀텀컴퓨팅",  "ticker": "QUBT",   "market": "US",  "sector": "양자컴퓨팅"},
+    {"name": "디웨이브퀀텀", "ticker": "QBTS",   "market": "US",  "sector": "양자컴퓨팅"},
+    {"name": "블룸에너지",   "ticker": "BE",     "market": "US",  "sector": "에너지"},
 ]

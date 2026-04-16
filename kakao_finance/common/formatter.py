@@ -9,18 +9,8 @@ def _cur(value: float, currency: str) -> str:
     return f"${value:,.2f}"
 
 
-def format_message(
-    stocks: list[dict],
-    base_date: str,
-    analyses: dict[str, str] | None = None,
-) -> str:
-    """주식 목록을 카카오 메시지 문자열로 포맷.
-
-    Args:
-        stocks:    fetch_all() 반환값
-        base_date: 기준일 (YYYYMMDD)
-        analyses:  ticker → AI 분석 텍스트 (analyzer 전용, 없으면 None)
-    """
+def format_message(stocks: list[dict], base_date: str) -> str:
+    """전체 종목 현황 메시지."""
     base_display = f"{base_date[:4]}-{base_date[4:6]}-{base_date[6:]}"
     today = datetime.now().strftime("%Y-%m-%d")
     lines = [f"📊 주식현황 {today}", f"(기준일: {base_display})", ""]
@@ -52,9 +42,24 @@ def format_message(
             d_sign = "+" if s["daily_change"] >= 0 else ""
             lines.append(f"전일대비 {d_arrow} {_cur(abs(s['daily_change']), currency)} ({d_sign}{s['daily_change_pct']:.2f}%)")
 
-        if analyses and s["ticker"] in analyses:
-            lines.append(f"[AI 분석] {analyses[s['ticker']]}")
+        lines.append("")
 
+    return "\n".join(lines).strip()
+
+
+def format_analysis_message(sector_analyses: list[dict]) -> str:
+    """섹터별 AI 분석 결과 메시지."""
+    today = datetime.now().strftime("%Y-%m-%d")
+    lines = [f"🔍 급등 분석 {today}", ""]
+
+    for item in sector_analyses:
+        sector = item["sector"]
+        stocks_str = " · ".join(
+            f"{s['name']}({s['daily_change_pct']:+.2f}%)"
+            for s in item["stocks"]
+        )
+        lines.append(f"[{sector}] {stocks_str}")
+        lines.append(item["analysis"])
         lines.append("")
 
     return "\n".join(lines).strip()

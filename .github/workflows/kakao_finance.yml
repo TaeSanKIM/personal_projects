@@ -18,16 +18,16 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: kakao_finance/alert/requirements.txt
+          cache-dependency-path: kakao_finance/requirements.txt
 
       - name: Install dependencies
-        run: pip install -r kakao_finance/alert/requirements.txt
+        run: pip install -r kakao_finance/requirements.txt
 
       - name: Create .env
         run: |
-          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/alert/.env
-          echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/alert/.env
-          echo "SEND_TIME=16:00" >> kakao_finance/alert/.env
+          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/.env
+          echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/.env
+          echo "SEND_TIME=16:00" >> kakao_finance/.env
 
       - name: Run stock alert
         run: python kakao_finance/alert/main.py
@@ -44,17 +44,17 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: kakao_finance/analyzer/requirements.txt
+          cache-dependency-path: kakao_finance/requirements.txt
 
       - name: Install dependencies
-        run: pip install -r kakao_finance/analyzer/requirements.txt
+        run: pip install -r kakao_finance/requirements.txt
 
       - name: Create .env
         run: |
-          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/analyzer/.env
-          echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/analyzer/.env
-          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> kakao_finance/analyzer/.env
-          echo "SEND_TIME=16:00" >> kakao_finance/analyzer/.env
+          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/.env
+          echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/.env
+          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> kakao_finance/.env
+          echo "SEND_TIME=16:00" >> kakao_finance/.env
 
       - name: Run stock analyzer
         run: python kakao_finance/analyzer/main.py

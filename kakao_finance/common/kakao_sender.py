@@ -1,16 +1,16 @@
 """카카오 '나에게 보내기' API를 통해 메시지를 전송."""
 
 import json
+import os
 
 import requests
 from dotenv import set_key
-import os
 
-from kakao_auth import refresh_access_token
-from config import KAKAO_REST_API_KEY, KAKAO_REFRESH_TOKEN
+from .kakao_auth import refresh_access_token
+from .config import KAKAO_REST_API_KEY, KAKAO_REFRESH_TOKEN
 
 MEMO_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
-ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
+ENV_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
 
 
 def _get_access_token() -> str:

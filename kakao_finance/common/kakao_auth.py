@@ -61,7 +61,9 @@ def refresh_access_token(rest_api_key: str, refresh_token: str) -> tuple[str, st
 
 if __name__ == "__main__":
     import os
-    from config import KAKAO_REST_API_KEY
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from common.config import KAKAO_REST_API_KEY
 
     if not KAKAO_REST_API_KEY:
         raise SystemExit(".env에 KAKAO_REST_API_KEY를 먼저 설정하세요.")
@@ -69,7 +71,7 @@ if __name__ == "__main__":
     code = _request_auth_code(KAKAO_REST_API_KEY)
     tokens = _exchange_code_for_tokens(KAKAO_REST_API_KEY, code)
 
-    env_path = os.path.join(os.path.dirname(__file__), ".env")
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
     set_key(env_path, "KAKAO_REFRESH_TOKEN", tokens["refresh_token"])
 
     print(f"\naccess_token : {tokens['access_token']}")

@@ -1,11 +1,15 @@
 """주식 시세 조회 → 급등 종목 AI 분석 → 카카오 메시지 전송."""
 
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from datetime import datetime
 
-from stock_fetcher import fetch_all
+from common.stock_fetcher import fetch_all
+from common.kakao_sender import send_message
+from common.config import BASE_DATE
 from stock_analyzer import analyze_surges
-from kakao_sender import send_message
-from config import BASE_DATE
 
 
 def _format_message(stocks: list[dict], analyses: dict[str, str]) -> str:

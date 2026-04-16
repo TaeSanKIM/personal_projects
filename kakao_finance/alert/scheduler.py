@@ -1,10 +1,14 @@
 """매일 지정 시각에 main.run()을 자동 실행."""
 
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import time
 
 import schedule
 
-from config import SEND_TIME
+from common.config import SEND_TIME
 from main import run
 
 

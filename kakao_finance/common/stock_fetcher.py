@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import yfinance as yf
 from pykrx import stock as krx
 
-from config import BASE_DATE, STOCKS
+from .config import BASE_DATE, STOCKS
 
 
 def _krx_price(ticker: str, from_date: str, days_forward: int = 10) -> float | None:
@@ -26,6 +26,17 @@ def _krx_current_price(ticker: str) -> float | None:
     return float(df.iloc[-1]["종가"])
 
 
+def _krx_prev_price(ticker: str) -> float | None:
+    """전일 종가를 반환."""
+    today = datetime.now()
+    start = (today - timedelta(days=10)).strftime("%Y%m%d")
+    end = today.strftime("%Y%m%d")
+    df = krx.get_market_ohlcv_by_date(start, end, ticker)
+    if len(df) < 2:
+        return None
+    return float(df.iloc[-2]["종가"])
+
+
 def _us_price(ticker: str, from_date: str, days_forward: int = 10) -> float | None:
     """from_date부터 최대 days_forward일 이내의 첫 거래일 종가를 반환."""
     start_dt = datetime.strptime(from_date, "%Y%m%d")
@@ -45,17 +56,6 @@ def _us_current_price(ticker: str) -> float | None:
     if hist.empty:
         return None
     return float(hist.iloc[-1]["Close"])
-
-
-def _krx_prev_price(ticker: str) -> float | None:
-    """전일 종가를 반환."""
-    today = datetime.now()
-    start = (today - timedelta(days=10)).strftime("%Y%m%d")
-    end = today.strftime("%Y%m%d")
-    df = krx.get_market_ohlcv_by_date(start, end, ticker)
-    if len(df) < 2:
-        return None
-    return float(df.iloc[-2]["종가"])
 
 
 def _us_prev_price(ticker: str) -> float | None:

@@ -4,49 +4,10 @@ import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime import datetime
-
 from common.stock_fetcher import fetch_all
 from common.kakao_sender import send_message
 from common.config import BASE_DATE
-
-
-def _format_message(stocks: list[dict]) -> str:
-    base_display = f"{BASE_DATE[:4]}-{BASE_DATE[4:6]}-{BASE_DATE[6:]}"
-    today = datetime.now().strftime("%Y-%m-%d")
-    lines = [f"📊 주식현황 {today}", f"(기준일: {base_display})", ""]
-
-    ok = sorted([s for s in stocks if "error" not in s], key=lambda s: s["daily_change_pct"] or 0, reverse=True)
-    failed = [s for s in stocks if "error" in s]
-    stocks = ok + failed
-
-    for s in stocks:
-        if "error" in s:
-            lines.append(f"{s['name']} ({s['ticker']}): 조회 실패")
-            lines.append("")
-            continue
-
-        arrow = "▲" if s["change"] >= 0 else "▼"
-        sign = "+" if s["change"] >= 0 else ""
-
-        if s["currency"] == "KRW":
-            cur = lambda p: f"{int(p):,}원"
-        else:
-            cur = lambda p: f"${p:,.2f}"
-
-        lines.append(f"{s['name']} ({s['ticker']})")
-        lines.append(f"현재 {cur(s['current_price'])}")
-        lines.append(f"기준 {cur(s['base_price'])}")
-        lines.append(f"기준대비 {arrow} {cur(abs(s['change']))} ({sign}{s['change_pct']:.2f}%)")
-
-        if s.get("daily_change_pct") is not None:
-            d_arrow = "▲" if s["daily_change"] >= 0 else "▼"
-            d_sign = "+" if s["daily_change"] >= 0 else ""
-            lines.append(f"전일대비 {d_arrow} {cur(abs(s['daily_change']))} ({d_sign}{s['daily_change_pct']:.2f}%)")
-
-        lines.append("")
-
-    return "\n".join(lines).strip()
+from common.formatter import format_message
 
 
 def run() -> None:
@@ -59,7 +20,7 @@ def run() -> None:
         else:
             print(f"  [{s['name']}] 현재 {s['current_price']:.2f} / 기준 {s['base_price']:.2f} / 등락 {s['change_pct']:+.2f}%")
 
-    message = _format_message(stocks)
+    message = format_message(stocks, BASE_DATE)
     print("\n--- 전송 메시지 ---")
     print(message)
     print("-------------------\n")

@@ -15,26 +15,17 @@ def _krx_price(ticker: str, from_date: str, days_forward: int = 10) -> float | N
     return float(df.iloc[0]["종가"])
 
 
-def _krx_current_price(ticker: str) -> float | None:
-    """최근 거래일 종가를 반환."""
+def _krx_recent_prices(ticker: str) -> tuple[float | None, float | None]:
+    """(current_price, prev_price) 반환. API 1회 호출로 두 값을 모두 가져온다."""
     today = datetime.now()
     start = (today - timedelta(days=10)).strftime("%Y%m%d")
     end = today.strftime("%Y%m%d")
     df = krx.get_market_ohlcv_by_date(start, end, ticker)
     if df.empty:
-        return None
-    return float(df.iloc[-1]["종가"])
-
-
-def _krx_prev_price(ticker: str) -> float | None:
-    """전일 종가를 반환."""
-    today = datetime.now()
-    start = (today - timedelta(days=10)).strftime("%Y%m%d")
-    end = today.strftime("%Y%m%d")
-    df = krx.get_market_ohlcv_by_date(start, end, ticker)
-    if len(df) < 2:
-        return None
-    return float(df.iloc[-2]["종가"])
+        return None, None
+    current = float(df.iloc[-1]["종가"])
+    prev = float(df.iloc[-2]["종가"]) if len(df) >= 2 else None
+    return current, prev
 
 
 def _us_price(ticker: str, from_date: str, days_forward: int = 10) -> float | None:
@@ -50,20 +41,14 @@ def _us_price(ticker: str, from_date: str, days_forward: int = 10) -> float | No
     return float(hist.iloc[0]["Close"])
 
 
-def _us_current_price(ticker: str) -> float | None:
-    """최근 거래일 종가를 반환."""
+def _us_recent_prices(ticker: str) -> tuple[float | None, float | None]:
+    """(current_price, prev_price) 반환. API 1회 호출로 두 값을 모두 가져온다."""
     hist = yf.Ticker(ticker).history(period="5d")
     if hist.empty:
-        return None
-    return float(hist.iloc[-1]["Close"])
-
-
-def _us_prev_price(ticker: str) -> float | None:
-    """전일 종가를 반환."""
-    hist = yf.Ticker(ticker).history(period="5d")
-    if len(hist) < 2:
-        return None
-    return float(hist.iloc[-2]["Close"])
+        return None, None
+    current = float(hist.iloc[-1]["Close"])
+    prev = float(hist.iloc[-2]["Close"]) if len(hist) >= 2 else None
+    return current, prev
 
 
 def fetch_all() -> list[dict]:
@@ -75,13 +60,11 @@ def fetch_all() -> list[dict]:
         try:
             if market == "KRX":
                 base_price = _krx_price(ticker, BASE_DATE)
-                current_price = _krx_current_price(ticker)
-                prev_price = _krx_prev_price(ticker)
+                current_price, prev_price = _krx_recent_prices(ticker)
                 currency = "KRW"
             else:
                 base_price = _us_price(ticker, BASE_DATE)
-                current_price = _us_current_price(ticker)
-                prev_price = _us_prev_price(ticker)
+                current_price, prev_price = _us_recent_prices(ticker)
                 currency = "USD"
 
             if base_price is None or current_price is None:

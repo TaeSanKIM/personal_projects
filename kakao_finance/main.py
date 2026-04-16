@@ -12,6 +12,10 @@ def _format_message(stocks: list[dict]) -> str:
     today = datetime.now().strftime("%Y-%m-%d")
     lines = [f"📊 주식현황 {today}", f"(기준일: {base_display})", ""]
 
+    ok = sorted([s for s in stocks if "error" not in s], key=lambda s: s["change_pct"], reverse=True)
+    failed = [s for s in stocks if "error" in s]
+    stocks = ok + failed
+
     for s in stocks:
         if "error" in s:
             lines.append(f"{s['name']} ({s['ticker']}): 조회 실패")

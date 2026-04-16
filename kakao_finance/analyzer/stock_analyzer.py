@@ -54,10 +54,13 @@ def analyze_surges(stocks: list[dict]) -> dict[str, str]:
                 )
 
                 if response.stop_reason == "end_turn":
-                    for block in response.content:
-                        if hasattr(block, "text") and block.text.strip():
-                            results[ticker] = block.text.strip()
-                            break
+                    text_parts = [
+                        block.text.strip()
+                        for block in response.content
+                        if hasattr(block, "text") and block.text.strip()
+                    ]
+                    if text_parts:
+                        results[ticker] = "\n".join(text_parts)
                     break
                 elif response.stop_reason == "pause_turn":
                     messages.append({"role": "assistant", "content": response.content})

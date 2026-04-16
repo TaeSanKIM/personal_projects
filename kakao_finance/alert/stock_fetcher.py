@@ -47,25 +47,6 @@ def _us_current_price(ticker: str) -> float | None:
     return float(hist.iloc[-1]["Close"])
 
 
-def _krx_prev_price(ticker: str) -> float | None:
-    """전일 종가를 반환."""
-    today = datetime.now()
-    start = (today - timedelta(days=10)).strftime("%Y%m%d")
-    end = today.strftime("%Y%m%d")
-    df = krx.get_market_ohlcv_by_date(start, end, ticker)
-    if len(df) < 2:
-        return None
-    return float(df.iloc[-2]["종가"])
-
-
-def _us_prev_price(ticker: str) -> float | None:
-    """전일 종가를 반환."""
-    hist = yf.Ticker(ticker).history(period="5d")
-    if len(hist) < 2:
-        return None
-    return float(hist.iloc[-2]["Close"])
-
-
 def fetch_all() -> list[dict]:
     """모든 종목의 기준가·현재가·등락 정보를 반환."""
     results = []

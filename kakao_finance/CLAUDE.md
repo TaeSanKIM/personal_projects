@@ -24,22 +24,43 @@ kakao_finance/
 ├── .github/
 │   └── workflows/
 │       └── kakao_finance.yml           # GitHub Actions 워크플로우
-├── config.py                           # 환경변수 로드 및 종목 목록 관리
-├── main.py                             # 진입점. 주식 조회 → 포맷 → 카카오 전송
-├── scheduler.py                        # 로컬 스케줄러 (선택적 사용)
-├── stock_fetcher.py                    # yfinance / pykrx 시세 조회
-├── kakao_sender.py                     # 카카오 나에게 보내기 전송
-└── kakao_auth.py                       # OAuth 인증 및 토큰 갱신
+├── alert/                              # 주식 시세 알림 기능
+│   ├── config.py                       # 환경변수 로드 및 종목 목록 관리
+│   ├── main.py                         # 진입점. 주식 조회 → 포맷 → 카카오 전송
+│   ├── scheduler.py                    # 로컬 스케줄러 (선택적 사용)
+│   ├── stock_fetcher.py                # yfinance / pykrx 시세 조회
+│   ├── kakao_sender.py                 # 카카오 나에게 보내기 전송
+│   ├── kakao_auth.py                   # OAuth 인증 및 토큰 갱신
+│   └── requirements.txt
+└── analyzer/                           # 급등 종목 AI 분석 기능
+    ├── config.py                       # 환경변수 로드 및 종목 목록 관리
+    ├── main.py                         # 진입점. 조회 → AI 분석 → 카카오 전송
+    ├── stock_fetcher.py                # 시세 조회 + 전일 대비 등락 계산
+    ├── stock_analyzer.py               # Anthropic API + web_search로 급등 원인 분석
+    ├── kakao_sender.py                 # 카카오 나에게 보내기 전송
+    ├── kakao_auth.py                   # OAuth 인증 및 토큰 갱신
+    └── requirements.txt
 ```
 
 ## 아키텍처
 
+### alert/ — 주식 시세 알림
 ```
 main.py           진입점. 주식 조회 → 메시지 포맷 → 카카오 전송 순서로 실행
 scheduler.py      main.py를 매일 지정 시각에 자동 호출
-kakao_auth.py     OAuth 인증 흐름 처리 및 토큰 갱신 유틸리티
-stock_fetcher.py  yfinance / pykrx를 이용해 주식 시세 조회 및 전일 대비 등락 계산
+stock_fetcher.py  yfinance / pykrx를 이용해 기준가 대비 등락 계산
 kakao_sender.py   Kakao REST API를 호출해 나에게 메시지 전송
+kakao_auth.py     OAuth 인증 흐름 처리 및 토큰 갱신 유틸리티
+config.py         .env 로드 및 추적할 주식 목록(종목 코드/티커) 관리
+```
+
+### analyzer/ — 급등 종목 AI 분석
+```
+main.py           진입점. 주식 조회 → AI 분석 → 메시지 포맷 → 카카오 전송
+stock_fetcher.py  alert/stock_fetcher 기능 + 전일 대비 등락(daily_change) 추가
+stock_analyzer.py 전일 대비 5% 이상 급등 종목을 Anthropic API + web_search로 원인 분석
+kakao_sender.py   Kakao REST API를 호출해 나에게 메시지 전송
+kakao_auth.py     OAuth 인증 흐름 처리 및 토큰 갱신 유틸리티
 config.py         .env 로드 및 추적할 주식 목록(종목 코드/티커) 관리
 ```
 
@@ -53,14 +74,29 @@ config.py         .env 로드 및 추적할 주식 목록(종목 코드/티커) 
 
 ```bash
 # 의존성 설치
-pip install -r requirements.txt
+pip install -r alert/requirements.txt
+pip install -r analyzer/requirements.txt
 
-# 앱 실행 (1회)
-python main.py
+# 주식 알림 실행 (1회)
+python alert/main.py
+
+# 급등 분석 실행 (1회)
+python analyzer/main.py
 
 # 스케줄러 시작 (매일 자동 실행)
-python scheduler.py
+python alert/scheduler.py
 
 # 카카오 토큰 초기 발급 (최초 1회)
-python kakao_auth.py
+python alert/kakao_auth.py
+```
+
+## 환경 변수 설정
+
+각 폴더에 `.env` 파일을 생성해야 한다:
+
+```
+KAKAO_REST_API_KEY=...       # Kakao Developers 앱의 REST API 키
+KAKAO_REFRESH_TOKEN=...      # 최초 인증 후 발급되는 리프레시 토큰
+SEND_TIME=16:00              # 매일 메시지를 보낼 시각 (HH:MM)
+ANTHROPIC_API_KEY=...        # analyzer/ 전용. Anthropic API 키
 ```

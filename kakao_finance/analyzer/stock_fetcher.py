@@ -67,7 +67,7 @@ def _us_prev_price(ticker: str) -> float | None:
 
 
 def fetch_all() -> list[dict]:
-    """모든 종목의 기준가·현재가·등락 정보를 반환."""
+    """모든 종목의 기준가·현재가·등락·전일대비 정보를 반환."""
     results = []
 
     for s in STOCKS:
@@ -76,10 +76,12 @@ def fetch_all() -> list[dict]:
             if market == "KRX":
                 base_price = _krx_price(ticker, BASE_DATE)
                 current_price = _krx_current_price(ticker)
+                prev_price = _krx_prev_price(ticker)
                 currency = "KRW"
             else:
                 base_price = _us_price(ticker, BASE_DATE)
                 current_price = _us_current_price(ticker)
+                prev_price = _us_prev_price(ticker)
                 currency = "USD"
 
             if base_price is None or current_price is None:
@@ -87,6 +89,13 @@ def fetch_all() -> list[dict]:
 
             change = current_price - base_price
             change_pct = change / base_price * 100
+
+            daily_change = None
+            daily_change_pct = None
+            if prev_price is not None:
+                daily_change = current_price - prev_price
+                daily_change_pct = daily_change / prev_price * 100
+
             results.append({
                 "name": name,
                 "ticker": ticker,
@@ -95,6 +104,8 @@ def fetch_all() -> list[dict]:
                 "current_price": current_price,
                 "change": change,
                 "change_pct": change_pct,
+                "daily_change": daily_change,
+                "daily_change_pct": daily_change_pct,
             })
         except Exception as e:
             results.append({"name": name, "ticker": ticker, "error": str(e)})

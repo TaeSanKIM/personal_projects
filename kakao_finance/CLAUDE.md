@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 파일 구조 및 로드 경로
+
+```
+kakao_finance/
+├── CLAUDE.md                           # 현재 파일 (프로젝트 진입점)
+├── .claude/
+│   ├── CLAUDE.md                       # Rules 진입점 (@import)
+│   └── rules/
+│       ├── stocks.md                   # 주식 선택 규칙
+│       ├── scheduler.md                # 스케줄러 규칙
+│       └── security.md                 # 보안 규칙
+├── .github/
+│   └── workflows/
+│       └── kakao_finance.yml           # GitHub Actions 워크플로우
+├── config.py                           # 환경변수 로드 및 종목 목록 관리
+├── main.py                             # 진입점. 주식 조회 → 포맷 → 카카오 전송
+├── scheduler.py                        # 로컬 스케줄러 (선택적 사용)
+├── stock_fetcher.py                    # yfinance / pykrx 시세 조회
+├── kakao_sender.py                     # 카카오 나에게 보내기 전송
+└── kakao_auth.py                       # OAuth 인증 및 토큰 갱신
+```
+
 ## 프로젝트 개요
 
 매일 지정한 주식들의 가격을 조회하고, 그 결과를 카카오톡 메시지로 자동 전송하는 Python 앱.

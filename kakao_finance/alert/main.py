@@ -37,7 +37,7 @@ def _format_message(stocks: list[dict]) -> str:
         lines.append(f"{s['name']} ({s['ticker']})")
         lines.append(f"현재 {cur(s['current_price'])}")
         lines.append(f"기준 {cur(s['base_price'])}")
-        lines.append(f"3/1 대비 {arrow} {cur(abs(s['change']))} ({sign}{s['change_pct']:.2f}%)")
+        lines.append(f"기준 대비 {arrow} {cur(abs(s['change']))} ({sign}{s['change_pct']:.2f}%)")
 
         if s.get("daily_change_pct") is not None:
             d_arrow = "▲" if s["daily_change"] >= 0 else "▼"

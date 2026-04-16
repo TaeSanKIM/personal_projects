@@ -6,6 +6,28 @@ import anthropic
 
 SURGE_THRESHOLD = 5.0  # 전일 대비 등락률 기준 (%)
 
+_PROMPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prompts", "surge_analysis.md")
+
+
+def _load_prompt() -> tuple[str, str, int]:
+    """surge_analysis.md에서 model, max_tokens, prompt 텍스트를 파싱해 반환."""
+    with open(_PROMPT_PATH, encoding="utf-8") as f:
+        raw = f.read()
+
+    # frontmatter 파싱
+    parts = raw.split("---", 2)
+    meta, body = parts[1], parts[2].strip()
+
+    model = "claude-opus-4-6"
+    max_tokens = 512
+    for line in meta.strip().splitlines():
+        if line.startswith("model:"):
+            model = line.split(":", 1)[1].strip()
+        elif line.startswith("max_tokens:"):
+            max_tokens = int(line.split(":", 1)[1].strip())
+
+    return model, max_tokens, body
+
 
 def analyze_surges(stocks: list[dict]) -> dict[str, str]:
     """급등 종목(전일 대비 SURGE_THRESHOLD% 이상)의 원인을 AI로 분석.
@@ -26,6 +48,7 @@ def analyze_surges(stocks: list[dict]) -> dict[str, str]:
         return {}
 
     client = anthropic.Anthropic(api_key=api_key)
+    model, max_tokens, prompt_template = _load_prompt()
     results = {}
 
     for s in surged:
@@ -35,17 +58,14 @@ def analyze_surges(stocks: list[dict]) -> dict[str, str]:
             messages = [
                 {
                     "role": "user",
-                    "content": (
-                        f"오늘 {name}({ticker}) 주식이 전일 대비 {pct:+.2f}% 급등했습니다. "
-                        "최근 뉴스를 검색해서 급등 원인을 한국어로 2-3문장으로 간결하게 설명해주세요."
-                    ),
+                    "content": prompt_template.format(name=name, ticker=ticker, pct=pct),
                 }
             ]
 
             while True:
                 response = client.messages.create(
-                    model="claude-opus-4-6",
-                    max_tokens=512,
+                    model=model,
+                    max_tokens=max_tokens,
                     tools=[{"type": "web_search_20260209", "name": "web_search"}],
                     messages=messages,
                 )

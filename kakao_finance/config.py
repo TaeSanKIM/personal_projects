@@ -12,6 +12,10 @@ BASE_DATE = "20260301"
 
 STOCKS = [
     {"name": "동양생명",     "ticker": "082640", "market": "KRX"},
+    {"name": "삼성전자",     "ticker": "005930", "market": "KRX"},
+    {"name": "SK하이닉스",   "ticker": "000660", "market": "KRX"},
     {"name": "코노코필립스", "ticker": "COP",    "market": "US"},
     {"name": "퀀텀컴퓨팅",  "ticker": "QUBT",   "market": "US"},
+    {"name": "디웨이브퀀텀", "ticker": "QBTS",   "market": "US"},
+    {"name": "블룸에너지",   "ticker": "BE",     "market": "US"},
 ]

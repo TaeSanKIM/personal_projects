@@ -25,11 +25,9 @@ jobs:
 
       - name: Create .env
         run: |
-          cat <<EOF > kakao_finance/.env
-          KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}
-          KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}
-          SEND_TIME=16:00
-          EOF
+          echo "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" > kakao_finance/.env
+          echo "KAKAO_REFRESH_TOKEN=${{ secrets.KAKAO_REFRESH_TOKEN }}" >> kakao_finance/.env
+          echo "SEND_TIME=16:00" >> kakao_finance/.env
 
       - name: Run stock alert
         run: python kakao_finance/main.py

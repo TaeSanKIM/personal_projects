@@ -16,7 +16,7 @@ def _format_message(stocks: list[dict]) -> str:
     today = datetime.now().strftime("%Y-%m-%d")
     lines = [f"📊 주식현황 {today}", f"(기준일: {base_display})", ""]
 
-    ok = sorted([s for s in stocks if "error" not in s], key=lambda s: s["change_pct"], reverse=True)
+    ok = sorted([s for s in stocks if "error" not in s], key=lambda s: s["daily_change_pct"] or 0, reverse=True)
     failed = [s for s in stocks if "error" in s]
     stocks = ok + failed
 
@@ -38,6 +38,12 @@ def _format_message(stocks: list[dict]) -> str:
         lines.append(f"현재 {cur(s['current_price'])}")
         lines.append(f"기준 {cur(s['base_price'])}")
         lines.append(f"{arrow} {cur(abs(s['change']))} ({sign}{s['change_pct']:.2f}%)")
+
+        if s.get("daily_change_pct") is not None:
+            d_arrow = "▲" if s["daily_change"] >= 0 else "▼"
+            d_sign = "+" if s["daily_change"] >= 0 else ""
+            lines.append(f"전일대비 {d_arrow} {cur(abs(s['daily_change']))} ({d_sign}{s['daily_change_pct']:.2f}%)")
+
         lines.append("")
 
     return "\n".join(lines).strip()

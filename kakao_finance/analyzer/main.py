@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common.stock_fetcher import fetch_all
 from common.kakao_sender import send_message
 from common.config import BASE_DATE
-from common.formatter import format_message
+from common.formatter import format_message, format_analysis_message
 from stock_analyzer import analyze_surges
 
 
@@ -22,21 +22,23 @@ def run() -> None:
             daily = f" / 전일대비 {s['daily_change_pct']:+.2f}%" if s.get("daily_change_pct") is not None else ""
             print(f"  [{s['name']}] 현재 {s['current_price']:.2f} / 기준 {s['base_price']:.2f} / 등락 {s['change_pct']:+.2f}%{daily}")
 
+    price_message = format_message(stocks, BASE_DATE)
+    print("\n--- 전송 메시지 ---")
+    print(price_message)
+    print("-------------------\n")
+    send_message(price_message)
+    print("주식현황 전송 완료.")
+
     print("\n급등 종목 AI 분석 중...")
     analyses = analyze_surges(stocks)
     if analyses:
-        for ticker, text in analyses.items():
-            print(f"  [{ticker}] {text[:80]}...")
+        for item in analyses:
+            print(f"  [{item['sector']}] {item['analysis'][:80]}...")
+        analysis_message = format_analysis_message(analyses)
+        send_message(analysis_message)
+        print("급등 분석 전송 완료.")
     else:
         print("  급등 종목 없음 (분석 건너뜀)")
-
-    message = format_message(stocks, BASE_DATE, analyses)
-    print("\n--- 전송 메시지 ---")
-    print(message)
-    print("-------------------\n")
-
-    send_message(message)
-    print("카카오톡 전송 완료.")
 
 
 if __name__ == "__main__":

@@ -50,15 +50,17 @@ def format_message(stocks: list[dict], base_date: str) -> str:
 def format_analysis_message(sector_analyses: list[dict]) -> str:
     """섹터별 AI 분석 결과 메시지."""
     today = datetime.now().strftime("%Y-%m-%d")
-    lines = [f"🔍 급등 분석 {today}", ""]
+    lines = [f"🔍 급등/급락 분석 {today}", ""]
 
     for item in sector_analyses:
         sector = item["sector"]
+        direction = item.get("direction", "급등")
+        icon = "📈" if direction == "급등" else "📉"
         stocks_str = " · ".join(
             f"{s['name']}({s['daily_change_pct']:+.2f}%)"
             for s in item["stocks"]
         )
-        lines.append(f"[{sector}] {stocks_str}")
+        lines.append(f"{icon} [{sector} {direction}] {stocks_str}")
         lines.append(item["analysis"])
         lines.append("")
 
